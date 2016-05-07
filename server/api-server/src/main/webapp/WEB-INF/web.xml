@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_1.xsd http://java.sun.com/xml/ns/javaee/web-common_3_1.xsd">
+
+	<!-- Java-based Spring container definition -->
+	<context-param>
+		<param-name>contextClass</param-name>
+		<param-value>org.springframework.web.context.support.AnnotationConfigWebApplicationContext
+		</param-value>
+	</context-param>
+
+	<!-- Location of Java @Configuration classes that configure the components 
+		that makeup this application -->
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>com.llug.api.config.ApiServerConfig
+		</param-value>
+	</context-param>
+
+	<!-- Rename session cookie -->
+	<context-param>
+		<!-- This parameter is wholly unreadable from Java, so it's duplicated 
+			in api-server.properties. If you change here, change there as well -->
+		<param-name>org.eclipse.jetty.servlet.SessionCookie</param-name>
+		<param-value>llid</param-value>
+	</context-param>
+
+	<context-param>
+		<!-- see AbstractSessionIdManager -->
+		<param-name>org.eclipse.jetty.server.newSessionId</param-name>
+		<param-value>llid</param-value>
+	</context-param>
+
+	<!-- Rename path param -->
+	<context-param>
+		<param-name>org.eclipse.jetty.servlet.SessionIdPathParameterName
+		</param-name>
+		<param-value>llid</param-value>
+	</context-param>
+
+	<!-- // walterh: no longer used, see ${delicious.sessionDomains} for dynamic 
+		support <context-param> <param-name>org.mortbay.jetty.servlet.SessionDomain</param-name> 
+		<param-value>.delicious.com</param-value> </context-param> -->
+
+	<context-param>
+		<param-name>org.eclipse.jetty.servlet.SessionURL</param-name>
+		<param-value>llid</param-value>
+	</context-param>
+
+	<context-param>
+		<param-name>org.eclipse.jetty.servlet.MaxAge</param-name>
+		<param-value>2592000</param-value>
+	</context-param>
+	
+
+	<!-- Configure cookie session timeout (7 days) -->
+	<!-- TODO: http://stackoverflow.com/questions/4933143/jsessionid-cookie-with-expiration-date-in-tomcat -->
+	<!-- HTTPOnly -->
+	<session-config>
+		<session-timeout>10080</session-timeout>
+		<!-- <cookie-config>
+			<max-age>86400</max-age>
+			this guy should be set in secs
+			<secure>true</secure>
+			<http-only>true</http-only>
+		</cookie-config> -->
+	</session-config>
+
+	<!-- Creates the Spring Container shared by all Servlets and Filters -->
+	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener
+		</listener-class>
+	</listener>
+
+	<!-- Spring Dispatcher Servlet: Processes application requests -->
+	<servlet>
+		<servlet-name>appServlet</servlet-name>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet
+		</servlet-class>
+		<init-param>
+			<param-name>contextClass</param-name>
+			<param-value>org.springframework.web.context.support.AnnotationConfigWebApplicationContext
+			</param-value>
+		</init-param>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>appServlet</servlet-name>
+		<!-- "/*" was the original, "/" supports jsp's, but means getPathInfo is 
+			empty, since we no longer allow full unrestricted path access that the "*" 
+			part affords -->
+		<url-pattern>/</url-pattern>
+	</servlet-mapping>
+
+	<error-page>
+		<error-code>404</error-code>
+		<location>/404</location>
+	</error-page>
+
+	<!-- Ensure UTF-8 encoded pages so that certain characters are displayed 
+		and submitted correctly -->
+	<!-- http://stackoverflow.com/questions/4470787/spring-rest-pathvariable-character-encoding -->
+	<filter>
+		<filter-name>encodingFilter</filter-name>
+		<filter-class>org.springframework.web.filter.CharacterEncodingFilter
+		</filter-class>
+		<init-param>
+			<param-name>encoding</param-name>
+			<param-value>UTF-8</param-value>
+		</init-param>
+		<!-- Do we really need this? -->
+		<!-- <property name="urlDecode" value="false"/> -->
+
+		<init-param>
+			<param-name>forceEncoding</param-name>
+			<param-value>true</param-value>
+		</init-param>
+	</filter>
+
+	<filter-mapping>
+		<filter-name>encodingFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+
+	<filter>
+		<filter-name>GzipFilter</filter-name>
+		<filter-class>org.mortbay.servlet.GzipFilter</filter-class>
+	</filter>
+
+	<filter-mapping>
+		<filter-name>GzipFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+
+	<!-- Secures the application -->
+	<!-- Spring Security Filters -->
+	<filter>
+		<filter-name>springSecurityFilterChain</filter-name>
+		<filter-class>org.springframework.web.filter.DelegatingFilterProxy
+		</filter-class>
+	</filter>
+
+	<filter-mapping>
+		<filter-name>springSecurityFilterChain</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+
+	<!-- Filters -->
+	<!-- http://stackoverflow.com/questions/8303162/jetty-cross-origin-filter -->
+	<!-- <filter> <filter-name>cross-origin</filter-name> <filter-class>org.eclipse.jetty.servlets.CrossOriginFilter</filter-class> 
+		</filter> <filter-mapping> <filter-name>cross-origin</filter-name> <url-pattern>/cometd/*</url-pattern> 
+		</filter-mapping> -->
+	<!-- Enables support for DELETE and PUT request methods with web browser 
+		clients -->
+	<filter>
+		<filter-name>hiddenHttpMethodFilter</filter-name>
+		<filter-class>org.springframework.web.filter.HiddenHttpMethodFilter
+		</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>hiddenHttpMethodFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+
+	<!-- Perf4j -->
+	<servlet>
+		<servlet-name>perf4j</servlet-name>
+		<servlet-class>org.perf4j.log4j.servlet.GraphingServlet
+		</servlet-class>
+		<init-param>
+			<param-name>graphNames</param-name>
+			<param-value>graphExecutionMean,graphExecutionTPS,graphExecutionMin,graphExecutionMax,graphExecutionStdDev,graphExecutionCount
+			</param-value>
+		</init-param>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>perf4j</servlet-name>
+		<url-pattern>/perf4j</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>perf4jLastDay</servlet-name>
+		<servlet-class>org.perf4j.log4j.servlet.GraphingServlet
+		</servlet-class>
+		<init-param>
+			<param-name>graphNames</param-name>
+			<param-value>graphExecutionMeanLastDay,graphExecutionTPSLastDay,graphExecutionMinLastDay,graphExecutionMaxLastDay,graphExecutionStdDevLastDay,graphExecutionCountLastDay
+			</param-value>
+		</init-param>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>perf4jLastDay</servlet-name>
+		<url-pattern>/perf4jLastDay</url-pattern>
+	</servlet-mapping>
+
+	<servlet-mapping>
+		<servlet-name>default</servlet-name>
+		<url-pattern>*.ico</url-pattern>
+	</servlet-mapping>
+
+	<!-- http://stackoverflow.com/questions/5261645/spring-mvcresource-not-finding-ico-files -->
+	<mime-mapping>
+		<extension>ico</extension>
+		<mime-type>image/vnd.microsoft.icon</mime-type>
+	</mime-mapping>
+</web-app>

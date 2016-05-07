@@ -1,0 +1,693 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <parent>
+        <groupId>com.wch</groupId>
+        <artifactId>wch-parent</artifactId>
+        <version>1.0.0</version>
+    </parent>
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.wch.api</groupId>
+    <artifactId>wch-api-server</artifactId>
+    <version>1.0.0.0</version>
+    <packaging>jar</packaging>
+
+    <name>wch-api-server</name>
+    <url>http://maven.apache.org</url>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.16.8</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.wch.commons</groupId>
+            <artifactId>wch-commons</artifactId>
+            <version>1.0.0.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjweaver</artifactId>
+            <version>${org.aspectj-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.jknack</groupId>
+            <artifactId>handlebars</artifactId>
+            <version>0.7.0</version>
+        </dependency>
+
+		<!-- Perf4j -->
+        <dependency>
+            <groupId>org.perf4j</groupId>
+            <artifactId>perf4j</artifactId>
+            <version>0.9.16</version>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-cli</groupId>
+            <artifactId>commons-cli</artifactId>
+            <version>1.2</version>
+        </dependency>
+
+		<!-- Spring -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+            <version>${spring.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-logging</groupId>
+                    <artifactId>commons-logging</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-expression</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-beans</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-aop</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>${spring.version}</version>
+            <exclusions>
+				<!-- Exclude Commons Logging in favor of SLF4j -->
+                <exclusion>
+                    <groupId>commons-logging</groupId>
+                    <artifactId>commons-logging</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context-support</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-tx</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-jdbc</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-orm</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-mock</artifactId>
+            <version>2.0.8</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-logging</groupId>
+                    <artifactId>commons-logging</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>
+            <version>${spring.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-logging</groupId>
+                    <artifactId>commons-logging</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-config</artifactId>
+            <version>3.2.5.RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-aspects</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.3.1</version>
+        </dependency>
+
+		<!-- override for camel-jms to make sure everything is on ${spring.version} -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-jms</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+
+		<!-- http://stackoverflow.com/questions/7402144/configuration-problem-spring-security-web-classes-are-not-available-you-need-t -->
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-web</artifactId>
+            <version>3.2.6.RELEASE</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.social</groupId>
+            <artifactId>spring-social-core</artifactId>
+            <version>${org.springframework.social-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.social</groupId>
+            <artifactId>spring-social-facebook</artifactId>
+            <version>${org.springframework.social.facebook-version}</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>jackson-mapper-asl</artifactId>
+                    <groupId>org.codehaus.jackson</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.social</groupId>
+            <artifactId>spring-social-facebook-web</artifactId>
+            <version>${org.springframework.social.facebook-version}</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>jackson-mapper-asl</artifactId>
+                    <groupId>org.codehaus.jackson</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.social</groupId>
+            <artifactId>spring-social-twitter</artifactId>
+            <version>${org.springframework.social.twitter-version}</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>jackson-mapper-asl</artifactId>
+                    <groupId>org.codehaus.jackson</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.social</groupId>
+            <artifactId>spring-social-linkedin</artifactId>
+            <version>${org.springframework.social.linkedin-version}</version>
+
+            <exclusions>
+                <exclusion>
+                    <groupId>org.codehaus.jackson</groupId>
+                    <artifactId>jackson-mapper-asl</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.social</groupId>
+            <artifactId>spring-social-web</artifactId>
+            <version>${org.springframework.social-version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.social</groupId>
+            <artifactId>spring-social-google</artifactId>
+            <version>1.0.0.RELEASE</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.social</groupId>
+            <artifactId>spring-social-tumblr</artifactId>
+            <version>1.1.0-SNAPSHOT</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/lib/spring-social-tumblr-1.1.0-SNAPSHOT.jar</systemPath>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.social</groupId>
+            <artifactId>spring-social-flickr-core</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/lib/spring-social-flickr-core-0.0.1-SNAPSHOT.jar</systemPath>
+        </dependency>
+
+		<!-- http://norrisshelton.wordpress.com/2012/07/15/spring-3-mvc-with-json-via-jackson-2-0/ -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>2.5.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.5.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+            <version>2.5.1</version>
+        </dependency>
+
+		<!-- @Inject -->
+        <dependency>
+            <groupId>javax.inject</groupId>
+            <artifactId>javax.inject</artifactId>
+            <version>1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.annotation</groupId>
+            <artifactId>jsr250-api</artifactId>
+            <version>1.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-server</artifactId>
+            <version>${jetty.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-servlet</artifactId>
+            <version>${jetty.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-webapp</artifactId>
+            <version>${jetty.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-util</artifactId>
+            <version>${jetty.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-servlets</artifactId>
+            <version>${jetty.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.eclipse.jetty</groupId>
+                    <artifactId>jetty-client</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-jsp-2.1</artifactId>
+            <version>7.5.4.v20111024</version>
+        </dependency>
+
+		<!-- Servlet -->
+		<!--
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>3.1.0</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet.jsp</groupId>
+			<artifactId>jsp-api</artifactId>
+			<version>2.1</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>jstl</artifactId>
+			<version>1.2</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet.jsp.jstl</groupId>
+			<artifactId>jstl-api</artifactId>
+			<version>1.2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.glassfish.web</groupId>
+			<artifactId>jstl-impl</artifactId>
+			<version>1.2</version>
+		</dependency>
+		-->
+		
+		<!--Logging -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
+
+		<!-- DataSource -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>com.springsource.org.apache.commons.dbcp</artifactId>
+            <version>1.2.2.osgi</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>com.springsource.org.apache.commons.pool</artifactId>
+            <version>1.5.3</version>
+            <scope>runtime</scope>
+        </dependency>
+
+		<!-- JSR 303 with Hibernate Validator -->
+        <dependency>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
+            <version>1.0.0.GA</version>
+        </dependency>
+
+        <dependency>
+            <groupId>bouncycastle</groupId>
+            <artifactId>bcprov-jdk16</artifactId>
+            <version>140</version>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-fileupload</groupId>
+            <artifactId>commons-fileupload</artifactId>
+            <version>1.2.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.4</version>
+        </dependency>
+
+		<!-- needed by Spring Social LinkedIn -->
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <version>1.10</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-collections4</artifactId>
+            <version>4.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>net.spy</groupId>
+            <artifactId>spymemcached</artifactId>
+            <version>2.11.6</version>
+        </dependency>
+
+        <dependency>
+            <groupId>nl.bitwalker</groupId>
+            <artifactId>UserAgentUtils</artifactId>
+            <version>1.6</version>
+            <scope>system</scope>
+			<!-- Latest maven is only 1.2.4, so do local install -->
+            <systemPath>${basedir}/lib/UserAgentUtils-1.6.jar</systemPath>
+        </dependency>
+
+        <dependency>
+            <groupId>org.facebook4j</groupId>
+            <artifactId>facebook4j-core</artifactId>
+            <version>2.2.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.twitter4j</groupId>
+            <artifactId>twitter4j-core</artifactId>
+            <version>4.0.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.googlecode.linkedin-j</groupId>
+            <artifactId>linkedin-j</artifactId>
+            <version>1.0.429</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/lib/linkedin-j-1.0.429.jar</systemPath>
+        </dependency>
+
+        <dependency>
+            <groupId>oauth.signpost</groupId>
+            <artifactId>signpost-core</artifactId>
+			<!-- This isn't the latest, but it is compatible with linkedin-j -->
+            <version>1.2.1.1</version>
+        </dependency>
+
+		<!-- for youtube api's -->
+        <dependency>
+            <groupId>com.google.api-client</groupId>
+            <artifactId>google-api-client</artifactId>
+            <version>1.19.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.http-client</groupId>
+            <artifactId>google-http-client-jackson2</artifactId>
+            <version>1.19.0</version>
+        </dependency>
+
+		<!-- https://developers.google.com/api-client-library/java/apis/youtube/v3 -->
+        <dependency>
+            <groupId>com.google.apis</groupId>
+            <artifactId>google-api-services-youtube</artifactId>
+            <version>v3-rev129-1.19.1</version>
+        </dependency>
+
+		<!-- http://code.google.com/p/google-plus-java-api/ -->
+        <dependency>
+            <groupId>com.googlecode.googleplus</groupId>
+            <artifactId>google-plus-java-api</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+			<!-- Jenkins can't find this, so make it local -->
+            <scope>system</scope>
+            <systemPath>${basedir}/lib/google-plus-java-api-0.0.1-SNAPSHOT.jar</systemPath>
+        </dependency>
+
+		<!-- http://stackoverflow.com/questions/5201498/springjpa-transactional-not-committing -->
+        <dependency>
+            <groupId>aopalliance</groupId>
+            <artifactId>aopalliance</artifactId>
+            <version>1.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>cglib</groupId>
+            <artifactId>cglib-nodep</artifactId>
+            <version>2.2.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.notnoop.apns</groupId>
+            <artifactId>apns</artifactId>
+            <version>1.0.0.Beta6</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.android</groupId>
+            <artifactId>gcm-server</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+
+			<!-- Jenkins can't find this, so make it local -->
+            <scope>system</scope>
+            <systemPath>${basedir}/lib/gcm-server-0.0.1-SNAPSHOT.jar</systemPath>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.zxing</groupId>
+            <artifactId>core</artifactId>
+            <version>2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.maxmind.geoip2</groupId>
+            <artifactId>geoip2</artifactId>
+            <version>0.4.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>it.sauronsoftware.cron4j</groupId>
+            <artifactId>cron4j</artifactId>
+            <version>2.2.5</version>
+        </dependency>
+
+        <dependency>
+            <groupId>rome</groupId>
+            <artifactId>rome</artifactId>
+            <version>1.5.0</version>
+
+            <scope>system</scope>
+            <systemPath>${basedir}/lib/rome-1.5.0.jar</systemPath>
+        </dependency>
+
+		<!-- https://code.google.com/p/simple-spring-memcached/ -->
+        <dependency>
+            <groupId>com.google.code.simple-spring-memcached</groupId>
+            <artifactId>xmemcached-provider</artifactId>
+            <version>3.2.1</version>
+        </dependency>
+
+		<!-- https://github.com/yyuu/jetty-nosql-memcached -->
+        <dependency>
+            <groupId>com.geishatokyo.jetty</groupId>
+            <artifactId>jetty-nosql-memcached</artifactId>
+            <version>0.5.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.geishatokyo.jetty</groupId>
+            <artifactId>jetty-nosql-kvs</artifactId>
+            <version>0.5.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>iaik</groupId>
+            <artifactId>iaik_jce</artifactId>
+            <version>3.13</version>
+
+            <scope>system</scope>
+            <systemPath>${basedir}/lib/iaik_jce-3.13.jar</systemPath>
+        </dependency>
+
+        <dependency>
+            <groupId>com.googlecode.json-simple</groupId>
+            <artifactId>json-simple</artifactId>
+            <version>1.1.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>net.lshift.diffa</groupId>
+            <artifactId>snowflake</artifactId>
+            <version>1.7.0</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>false</filtering>
+            </resource>
+        </resources>
+
+        <plugins>
+			<!-- make skipTests=true the default -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.19</version>
+                <configuration>
+                    <includes>
+                        <include>**/*Tests.java</include>
+                    </includes>
+                    <skipTests>true</skipTests>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.5</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>2.17</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-report-plugin</artifactId>
+                <version>2.19.1</version>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>cobertura-maven-plugin</artifactId>
+                <version>2.7</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.10.3</version>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>2.6</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>test-jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-dependencies</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/dependencies</outputDirectory>
+                            <overWriteReleases>false</overWriteReleases>
+                            <overWriteSnapshots>false</overWriteSnapshots>
+                            <overWriteIfNewer>true</overWriteIfNewer>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.10.3</version>
+            </plugin>
+
+        </plugins>
+    </reporting>
+</project>

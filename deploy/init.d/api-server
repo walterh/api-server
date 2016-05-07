@@ -1,0 +1,117 @@
+#! /bin/bash
+### BEGIN INIT INFO
+# Provides:     api-server
+# Required-Start:   $syslog
+# Required-Stop:    $syslog
+# Should-Start:     $local_fs
+# Should-Stop:      $local_fs
+# Default-Start:    2 3 4 5
+# Default-Stop:     0 1 6
+# Short-Description:    api-server - platform api
+# Description:      api-server - platform api
+### END INIT INFO
+
+PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin:/opt/local/bin:$PATH
+
+AS_USER="deploy"
+APP_NAME="api-server"
+APP_HOME="/var/backends/api-server"
+PID_DIR="/var/run/${APP_NAME}"
+LOG_DIR="/var/logs/${APP_NAME}"
+JVM_HEAP_SIZE="-Xms1536m -Xmx1536m"
+
+if grep -i ubuntu /etc/issue > /dev/null; then
+    AS_USER="ubuntu"
+    APP_HOME="/mnt/llug/api-server"
+    PID_DIR="/var/run/${APP_NAME}"
+    LOG_DIR="/mnt/llug/logs/${APP_NAME}"
+    LOG_DIR_ROOT="/mnt/llug/logs"
+    JVM_HEAP_SIZE="-Xms512m -Xmx512m"
+elif grep -i debian /etc/issue > /dev/null; then
+    JVM_HEAP_SIZE="-Xms512m -Xmx512m"
+fi
+
+JAVA=`which java`
+JARS="$APP_HOME/*:$APP_HOME/dependencies/*:"
+CP=$JARS"${APP_HOME}/conf/"
+MAIN_CLASS="com.llug.api.ApiServerApp"
+JAVA_CONFIG="-Dnotify.remoting.max_read_buffer_size=5242880 -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=9303 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dfile.encoding=UTF-8 ${JVM_HEAP_SIZE} -XX:+UseConcMarkSweepGC -XX:+UseCMSCompactAtFullCollection -XX:+CMSClassUnloadingEnabled -XX:CMSInitiatingOccupancyFraction=70 -XX:+CMSParallelRemarkEnabled -Dnetworkaddress.cache.ttl=300 -XX:PermSize=512m -XX:MaxPermSize=512m -Djava.net.preferIPv4Stack=true  -XX:+UseCompressedOops -Dlog4j.logdir=${LOG_DIR_ROOT} -Dlog4j.configuration=file:${APP_HOME}/conf/log4j.xml -cp $CP $MAIN_CLASS"
+
+daemon_args="--name $APP_NAME --user $AS_USER --pidfile $PID_DIR/pid --stdout=$LOG_DIR/output.log --stderr=$LOG_DIR/error.log --chdir $APP_HOME"
+
+function running() {
+    daemon $daemon_args --running
+}
+
+# Bash automatically trims by assigning to variables and by passing arguments.
+function trim() {
+    echo $1;
+}
+
+function start_server() {
+    mkdir -p $PID_DIR
+    mkdir -p $LOG_DIR
+    chown -R $AS_USER $PID_DIR
+    chown -R $AS_USER $LOG_DIR
+
+    if running; then
+        echo "$APP_NAME already running."
+        exit 0
+    fi
+    echo "daemon $daemon_args -- $JAVA $JAVA_CONFIG"
+    daemon $daemon_args -- $JAVA $JAVA_CONFIG
+    if [ $? -eq 0 ] ; then
+        echo "Starting $APP_NAME"
+    else
+        echo "failed to starting $APP_NAME"
+    fi
+}
+
+case "$1" in
+    start)
+        start_server;
+        ;;
+    stop)
+        if ! running; then
+            echo "$APP_NAME not running."
+            exit 0
+        fi
+        count=1
+        while [ $count -le 5 ] && running;
+        do
+            echo "Stopping $APP_NAME $count times"
+            daemon $daemon_args --stop
+            (( count++ ))
+            sleep 2;
+        done
+        if running; then
+            echo "Tired, kill -9 $APP_NAME daemon `cat $PID_DIR/pid`"
+            kill -9 `cat $PID_DIR/pid`
+            pids=`jps |grep ApiServerApp |cut -d ' ' -f1 |tr '\n' ', '`
+            echo "Kill ApiServerApp $pids"
+            jps |grep ApiServerApp |cut -d ' ' -f1|xargs kill -9
+            exit 0;
+        fi
+        ;;
+    status)
+        if running; then
+            echo "$APP_NAME running"
+        else
+            echo "$APP_NAME not running"
+        fi
+        ;;
+    restart|force-reload)
+        while running
+        do
+            $0 stop
+            sleep 1;
+        done
+        $0 start
+        ;;
+    *)
+        echo "Usage: /etc/init.d/$APP_NAME {start|status|stop|restart|force-reload}" >&2
+        exit 1
+        ;;
+esac
+
+exit 0

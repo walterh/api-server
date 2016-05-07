@@ -1,0 +1,124 @@
+# api-server
+
+Installing Jenkins:
+1)  install Java 8: http://tecadmin.net/install-oracle-java-8-jdk-8-ubuntu-via-ppa/
+sudo add-apt-repository ppa:webupd8team/java
+sudo apt-get update
+sudo apt-get install oracle-java8-installer
+sudo apt-get install oracle-java8-set-default
+
+2)  install maven:  sudo apt-get install maven
+http://www.mkyong.com/maven/install-maven-on-mac-osx/
+
+3)  install git:  sudo apt-get install git-all
+4)  install nginx: sudo apt-get install nginx
+
+sudo apt-get install nginx libreadline-dev libncurses5-dev libpcre3-dev libssl-dev perl make
+Install OpenResty (http://openresty.org/#Installation) for some nginx modules we'll be using
+
+
+
+5)  configure nginx site:  see /jenkins/nginx/sites-available/jenkins
+6)  configure /jenkins virtual directory:  see /etc/default/jenkins changes
+https://wiki.jenkins-ci.org/display/JENKINS/Running+Jenkins+behind+Nginx
+
+7)  install python:  sudo apt-get install python-pip
+8)  pip install -U boto
+9)  install fabric:  sudo apt-get install fabric
+10) install jenkins:
+
+wget -q -O - https://jenkins-ci.org/debian/jenkins-ci.org.key | sudo apt-key add -
+sudo sh -c 'echo deb http://pkg.jenkins-ci.org/debian binary/ > /etc/apt/sources.list.d/jenkins.list'
+sudo apt-get update
+sudo apt-get install jenkins
+
+Configuring Jenkins with BitBucket:
+
+1)  log into Jenkins box
+2)  sudo su jenkins
+3)  ssh git@bitbucket.org (to add bitbucket.org to known hosts)
+4)  add jenkins' instance's ssh public key to bitbucket:
+
+ssh-keygen -t rsa WITH NO PASSPHRASE, ELSE GIT WILL HAVE ERROR
+Add to deployment key in bitbucket settings
+
+5)  add Repository URL to Jenkins build job:  eg, ssh://git@bitbucket.org/walterh/llug.git
+
+note: this should work, or there will be an error
+
+6)  manual test access to BitBucket repository:  git ls-remote -h ssh://git@bitbucket.org/walterh/llug.git HEAD
+
+note: sudo su jenkins before you run (run as the jenkins process)
+
+
+7)  add Repository browser to Jenkins:  https://bitbucket.org/walterh/llug/
+8)  set root pom
+
+note: this is relative to the root folder. eg for llug, it is src/pom.xml
+
+8)  Configure Java 8 in jenkins.  JAVA_HOME=/usr/lib/jvm/java-8-oracle
+9)  Configure Maven in jenkins.  MAVEN_HOME=/usr/share/maven
+
+
+Setting Up MySQL SSH tunnelling
+- SSH Hostname:  the name of the mysql instance (server running mysql)
+- SSH username: ubuntu
+- SSH Key File: path to pem
+- MySQL Hostname:  localhost
+- MySQL Server Port:  3306
+- username: root
+- password: pwd
+- connectivity: http://stackoverflow.com/questions/13378566/cannot-connect-to-mysql-host-not-allowed
+- eg:
+GRANT ALL PRIVILEGES ON *.* TO 'xxx_user'@'ip-172-31-29-6.us-west-2.compute.internal' IDENTIFIED BY 'xxx' WITH GRANT OPTION;
+use mysql;
+select user, host from user;
+
+
+
+[Other Notes]
+Configure Google OAuth login for gmail accounts:
+	[OpenID SSO] https://www.google.com/accounts/o8/id
+
+
+Disabling all Jenkins security:
+	https://wiki.jenkins-ci.org/display/JENKINS/Disable+security
+
+
+Disable services on boot:
+	sudo update-rc.d -f apache2 disable
+
+
+Setup build triggers between bitbucket and Jenkins:
+
+webhooks: https://confluence.atlassian.com/bitbucket/manage-webhooks-735643732.html
+"Build Authorization Token Root Plugin" - https://stackoverflow.com/questions/31409149/jenkins-remote-trigger-not-working
+http://jenkins.server.com/jenkins/buildByToken/build?job=api-server&token=token
+
+whitelist for AWS security group (from https://confluence.atlassian.com/bitbucket/manage-webhooks-735643732.html)
+131.103.20.160/27
+165.254.145.0/26
+104.192.143.0/24
+
+
+postbuild?
+http://www.vogella.com/tutorials/Jenkins/article.html
+
+
+fabric:
+1) be the jenkins user: sudo su jenkins
+2) make sure your AWS security group allows ssh access anywhere, or within the local network
+3) on the jenkins machine:
+- ssh to each deployment server to get the ssh key fingerprint
+- copy the pem to /var/lib/jenkins
+- chmod 400 to the pem file
+- set the fab config in
+fab -i ~/walterh.api-server.pem -u ubuntu -H ec2-52-32-30-213.us-west-2.compute.amazonaws.com deploy_api_service
+
+
+memcached, mysql cannot connect:
+http://superuser.com/questions/291253/how-to-connect-to-memcached-from-another-machine
+
+
+Java CI:
+http://devopscube.com/java-continuos-integration-jenkins-beginners-guide/

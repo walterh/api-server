@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:beans="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:task="http://www.springframework.org/schema/task" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:camel="http://camel.apache.org/schema/spring" xmlns:util="http://www.springframework.org/schema/util" xmlns:aop="http://www.springframework.org/schema/aop" xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:security="http://www.springframework.org/schema/security"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/task
+       http://www.springframework.org/schema/task/spring-task.xsd
+       http://www.springframework.org/schema/tx
+       http://www.springframework.org/schema/tx/spring-tx.xsd
+       http://www.springframework.org/schema/util
+       http://www.springframework.org/schema/util/spring-util.xsd
+       http://www.springframework.org/schema/aop
+       http://www.springframework.org/schema/aop/spring-aop-3.1.xsd
+       http://camel.apache.org/schema/spring
+       http://camel.apache.org/schema/spring/camel-spring.xsd
+       http://www.springframework.org/schema/mvc
+       http://www.springframework.org/schema/mvc/spring-mvc-3.1.xsd
+       http://www.springframework.org/schema/security
+	   http://www.springframework.org/schema/security/spring-security-3.1.xsd">
+
+	<context:component-scan base-package="com.llug.api" />
+	<context:spring-configured />
+	<context:annotation-config />
+
+	<aop:aspectj-autoproxy proxy-target-class="true" />
+
+	<mvc:default-servlet-handler />
+	<task:annotation-driven />
+
+	<!-- http://stackoverflow.com/questions/1801828/hibernate-jpa-and-spring-javax-persistence-transactionrequiredexception-no-tran 
+		answer #0: don't use mode="aspectj" aspectj seems to disable JPA transaction 
+		manager in spring-hibernate. This combination below seems to work. -->
+	<tx:annotation-driven transaction-manager="transactionManager" proxy-target-class="true" order="1" />
+
+	<mvc:annotation-driven>
+		<!-- http://static.springsource.org/spring/docs/3.1.0.M1/spring-framework-reference/html/mvc.html#mvc-annotation-driven -->
+		<mvc:message-converters>
+
+			<bean class="com.llug.api.ApiHttpMessageConverterApplicationJson" />
+			<bean class="com.llug.api.ApiHttpMessageConverterTextPlain" />
+
+			<bean class="org.springframework.http.converter.ByteArrayHttpMessageConverter">
+				<property name="supportedMediaTypes">
+					<list>
+						<value>image/jpeg</value>
+						<value>image/png</value>
+					</list>
+				</property>
+			</bean>
+		</mvc:message-converters>
+	</mvc:annotation-driven>
+
+	<bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/WEB-INF/jsp/" />
+		<property name="suffix" value=".jsp" />
+	</bean>
+
+	<bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping">
+		<property name="useDefaultSuffixPattern" value="false" />
+	</bean>
+
+	<!-- http://stackoverflow.com/questions/1483063/spring-mvc-3-and-handling-static-content-am-i-missing-something -->
+	<mvc:resources mapping="/resources/**" location="/, /resources/" />
+
+	<bean id="apiservicePropertyPlaceholder" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="placeholderPrefix">
+			<value>$api{</value>
+		</property>
+		<property name="ignoreResourceNotFound" value="true" />
+		<property name="ignoreUnresolvablePlaceholders" value="true" />
+		<property name="locations">
+			<list>
+				<value>classpath:api-server.properties</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="lifecycleProcessor" class="org.springframework.context.support.DefaultLifecycleProcessor">
+		<!-- timeout value in milliseconds -->
+		<property name="timeoutPerShutdownPhase" value="60000" />
+	</bean>
+
+
+	<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+		<property name="webBindingInitializer">
+			<bean class="org.springframework.web.bind.support.ConfigurableWebBindingInitializer">
+				<property name="validator">
+					<bean class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean">
+					</bean>
+				</property>
+			</bean>
+		</property>
+		<property name="messageConverters">
+			<list>
+				<bean class="org.springframework.http.converter.ByteArrayHttpMessageConverter" />
+				<bean class="org.springframework.http.converter.StringHttpMessageConverter" />
+				<bean class="org.springframework.http.converter.ResourceHttpMessageConverter" />
+				<bean class="org.springframework.http.converter.xml.SourceHttpMessageConverter" />
+				<bean class="org.springframework.http.converter.xml.XmlAwareFormHttpMessageConverter" />
+				<bean class="org.springframework.http.converter.xml.Jaxb2RootElementHttpMessageConverter" />
+				<bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter" />
+				<bean class="org.springframework.http.converter.feed.AtomFeedHttpMessageConverter" />
+				<bean class="org.springframework.http.converter.feed.RssChannelHttpMessageConverter" />
+			</list>
+		</property>
+	</bean>
+
+	<!-- http://stackoverflow.com/questions/7253118/spring-annotation-driver-transaction-with-aspectj-problem -->
+	<bean class="org.springframework.transaction.aspectj.AnnotationTransactionAspect" factory-method="aspectOf">
+		<property name="transactionManager" ref="transactionManager" />
+	</bean>
+
+	<bean id="transactionManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+
+	<bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="packagesToScan" value="com.llug.api.persistence.model" />
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.hbm2ddl.auto">$api{hibernate.hbm2ddl.auto}</prop>
+				<prop key="hibernate.dialect">$api{hibernate.dialect}</prop>
+				
+				<!-- http://stackoverflow.com/questions/14588012/cannot-get-transactional-and-hibernate-4-to-work-together -->
+				<!-- <prop key="hibernate.current_session_context_class">thread</prop>  -->
+				<prop key="hibernate.transaction.flush_before_completion">true</prop>
+				<prop key="hibernate.transaction.auto_close_session">true</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
+		<property name="driverClassName" value="$api{jdbc.driverClassName}" />
+		<property name="url" value="$api{jdbc.url}" />
+		<property name="username" value="$api{jdbc.user}" />
+		<property name="password" value="$api{jdbc.pass}" />
+		<property name="maxActive" value="$api{dbcp.maxActive}" />
+		<property name="maxWait" value="$api{dbcp.maxWait}" />
+		<property name="minIdle" value="$api{dbcp.minIdle}" />
+		<property name="maxIdle" value="$api{dbcp.maxIdle}" />
+		<property name="validationQuery" value="$api{dbcp.validationQuery}" />
+		<property name="testOnBorrow" value="true" />
+	</bean>
+
+
+	<bean id="persistenceExceptionTranslationPostProcessor" class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor" />
+
+	<bean name="defaultMemcachedClient" class="com.google.code.ssm.CacheFactory">
+		<property name="cacheClientFactory">
+			<bean class="com.google.code.ssm.providers.xmemcached.MemcacheClientFactoryImpl" />
+		</property>
+		<property name="addressProvider">
+			<bean class="com.google.code.ssm.config.DefaultAddressProvider">
+				<property name="address" value="127.0.0.1:11211" />
+			</bean>
+		</property>
+		<property name="configuration">
+			<bean class="com.google.code.ssm.providers.CacheConfiguration">
+				<property name="consistentHashing" value="true" />
+			</bean>
+		</property>
+	</bean>
+
+	<import resource="../webapp/WEB-INF/security.xml" />
+
+</beans>
