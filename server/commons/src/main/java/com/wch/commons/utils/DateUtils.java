@@ -6,12 +6,13 @@ import java.util.regex.Pattern;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
+import lombok.extern.slf4j.Slf4j;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Slf4j
 public class DateUtils {
-    private static final Logger logger = LoggerFactory.getLogger(DateUtils.class);
-
     public static final Pattern LONG_BASE10_PATTERN = Pattern.compile("^[0-9]+$");
     public static final Pattern LONG_BASE16_PATTERN = Pattern.compile("^[a-f0-9]+$", Pattern.CASE_INSENSITIVE);
 

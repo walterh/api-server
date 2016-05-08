@@ -5,6 +5,8 @@ import java.util.Collection;
 
 import javax.persistence.Transient;
 
+import lombok.extern.slf4j.Slf4j;
+
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
@@ -18,10 +20,9 @@ import com.llug.api.persistence.model.EntityAccount;
 import com.llug.api.persistence.model.EntityUtils;
 import com.wch.commons.utils.Utils;
 
+@Slf4j
 @JsonSerialize(include = Inclusion.NON_NULL)
 public class Account implements UserDetails, Serializable {
-    private static final Logger logger = LoggerFactory.getLogger(Account.class);
-
     private static final long serialVersionUID = -2220895762980772043L;
 
     private String accountId;

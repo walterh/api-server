@@ -18,12 +18,13 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import lombok.extern.slf4j.Slf4j;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
+@Slf4j
 public class FileUtils {
-    private static final Logger logger = LoggerFactory.getLogger(FileUtils.class);
     public static String separator = File.separator;
 
     // "?:" means non-capturing group. Used for performance
@@ -130,7 +131,7 @@ public class FileUtils {
                 try {
                     fis.close();
                 } catch (Exception e) {
-                    logger.error("readFile:  exception closing FileInputStream = " + LogUtils.getStackTrace(e));
+                    log.error("readFile:  exception closing FileInputStream = " + LogUtils.getStackTrace(e));
                 }
             }
         }

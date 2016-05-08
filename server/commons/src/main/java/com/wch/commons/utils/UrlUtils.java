@@ -13,14 +13,16 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import lombok.extern.slf4j.Slf4j;
+
 import org.restlet.data.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.net.InternetDomainName;
 
+@Slf4j
 public class UrlUtils {
-    private static final Logger logger = LoggerFactory.getLogger(UrlUtils.class);
     private static final String HTTP_PROCOTOL = "http://";
     private static final String HTTPS_PROCOTOL = "https://";
     private static final String[] HOMEPAGE_SUFFIXES = { "/index.htm",
@@ -84,7 +86,7 @@ public class UrlUtils {
                 return validCount <= 1;
             }
         } catch (Exception ex) {
-            logger.warn("failed to parse url:{}, cause:{}", url, ex.getMessage());
+            log.warn("failed to parse url:{}, cause:{}", url, ex.getMessage());
         }
         return false;
     }
@@ -200,12 +202,12 @@ public class UrlUtils {
             String query = ref.getQuery();
             String fragment = ref.getFragment();
             if (scheme == null || host == null || path == null || host.isEmpty() || scheme.isEmpty()) {
-                logger.error("Url Format error, url: {}", taintedURL);
+                log.error("Url Format error, url: {}", taintedURL);
                 return null;
             }
             return Reference.toString(scheme, host, path, query, fragment);
         } catch (URISyntaxException e) {
-            logger.error("Url Normalize Error, Ex: {}", e.getStackTrace());
+            log.error("Url Normalize Error, Ex: {}", e.getStackTrace());
         }
         return null;
     }

@@ -28,6 +28,8 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import lombok.extern.slf4j.Slf4j;
+
 import org.hibernate.QueryException;
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Whitelist;
@@ -54,9 +56,8 @@ import com.wch.commons.utils.Utils;
 
 import ch.lambdaj.function.closure.Closure;
 
+@Slf4j
 public class RequestUtils {
-    private static final Logger logger = LoggerFactory.getLogger(RequestUtils.class);
-
     public static ApiVersion getApiVersion(HttpServletRequest request) {
         String path = request.getRequestURI();
 
@@ -98,7 +99,7 @@ public class RequestUtils {
             api.setError(e.getMessage());
             api.setStacktrace(stackTrace);
 
-            logger.error(extendedError);
+            log.error(extendedError);
 
             /*
             if (!OSValidator.isMac()) {
@@ -283,7 +284,7 @@ public class RequestUtils {
             reader.reset();
             // do NOT close the reader here, or you won't be able to get the post data twice
         } catch (IOException e) {
-            logger.warn("getPostData couldn't get the post data", e); // This has happened if the request's reader is closed    
+            log.warn("getPostData couldn't get the post data", e); // This has happened if the request's reader is closed    
         }
 
         return sb.toString();
@@ -323,7 +324,7 @@ public class RequestUtils {
         }
 
         if (dump) {
-            logger.warn(sb.toString());
+            log.warn(sb.toString());
         }
 
         return headers;
@@ -348,7 +349,7 @@ public class RequestUtils {
         }
 
         if (dump) {
-            logger.warn(sb.toString());
+            log.warn(sb.toString());
         }
 
         return sb.toString();
