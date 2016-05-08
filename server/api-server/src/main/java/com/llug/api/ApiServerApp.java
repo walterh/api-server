@@ -1,7 +1,11 @@
 package com.llug.api;
 
+import lombok.extern.slf4j.Slf4j;
+
 import org.eclipse.jetty.nosql.memcached.MemcachedSessionIdManager;
+import org.eclipse.jetty.server.HttpConnectionFactory;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.util.thread.ThreadPool;
 import org.eclipse.jetty.webapp.WebAppContext;
@@ -11,9 +15,8 @@ import org.springframework.core.io.ClassPathResource;
 
 import uk.org.lidalia.sysoutslf4j.context.SysOutOverSLF4J;
 
+@Slf4j
 public class ApiServerApp {
-    private static final Logger logger = LoggerFactory.getLogger(ApiServerApp.class);
-
     private static final String LISTEN_PORT = "server.port";
     private static final String MAXTHREADS = "server.maxThreads";
 
@@ -27,8 +30,14 @@ public class ApiServerApp {
         final String memcacheCluster = config.getStringValue("memcache.cluster", "localhost:11211");
 
         final ThreadPool threadPool = new QueuedThreadPool(maxThreads);
-        final Server server = new Server(port);
+        //final Server server = new Server(port);
 
+        // http://stackoverflow.com/questions/23329135/how-do-you-set-both-port-and-thread-pool-using-embedded-jetty-v-9-1-0
+        final Server server = new Server(threadPool);
+        final ServerConnector connector = new ServerConnector(server, new HttpConnectionFactory());
+        connector.setPort(port);
+        server.addConnector(connector);
+        
         // http://wiki.eclipse.org/Jetty/Tutorial/Embedding_Jetty
         // http://stackoverflow.com/questions/4390093/add-web-application-context-to-jetty
         final WebAppContext wac = new WebAppContext();
@@ -42,7 +51,7 @@ public class ApiServerApp {
         rsrcBase = rsrcBase.substring(0, rsrcBase.lastIndexOf("/"));
 
         String webapp = rsrcBase + "/webapp";
-        logger.warn("web root = " + webapp);
+        log.warn("web root = " + webapp);
         wac.setResourceBase(webapp);
         wac.setDescriptor(webapp + "/WEB-INF/web.xml");
         wac.setContextPath("/");
