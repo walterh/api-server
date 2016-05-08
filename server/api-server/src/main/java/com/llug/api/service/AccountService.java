@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -30,7 +31,8 @@ public class AccountService {
     protected AuthenticationService authenticationService;
 
     @Autowired
-    ApiPasswordEncoder passwordEncoder;
+    PasswordEncoder passwordEncoder;
+    //ApiPasswordEncoder passwordEncoder;
 
     @Autowired
     LlugRepository accountRepository;
@@ -54,7 +56,7 @@ public class AccountService {
     }
 
     public Account registerAccount(final HttpServletRequest request, final String fullName, final String username, final String email, final String password) {
-        final String passwordHash = passwordEncoder.encodePassword(password, null);
+        final String passwordHash = passwordEncoder.encode(password);
         Account account = null;
 
         try {

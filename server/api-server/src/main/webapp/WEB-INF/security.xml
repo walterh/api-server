@@ -70,10 +70,25 @@
 		<beans:property name="order" value="1" />
 	</beans:bean>
 
-	<beans:bean id="apiPasswordEncoder" class="com.llug.api.ApiPasswordEncoder" autowire="byName" />
-	<beans:bean id="apiSaltSource" class="com.llug.api.ApiSaltSource" />
-	
+    <!-- https://stackoverflow.com/questions/17444258/how-to-use-new-passwordencoder-from-spring-security?rq=1 -->
+	<beans:bean id="passwordEncoder" class="com.llug.api.ApiBCryptPasswordEncoder" autowire="byName" />
+    <authentication-manager alias="authenticationManager">
+        <authentication-provider ref="authProvider"></authentication-provider>  
+    </authentication-manager>
+
+    <beans:bean id="authProvider" class="org.springframework.security.authentication.dao.DaoAuthenticationProvider">
+        <beans:property name="userDetailsService" ref="authenticationServiceImpl" />
+        <beans:property name="passwordEncoder" ref="passwordEncoder" />
+    </beans:bean>
+    
+    
+    
+
+    	
 	<!-- http://stackoverflow.com/questions/8067564/spring-security-salt -->
+<!--    
+    <beans:bean id="apiPasswordEncoder" class="com.llug.api.ApiPasswordEncoder" autowire="byName" />
+    <beans:bean id="apiSaltSource" class="com.llug.api.ApiSaltSource" />
 	<authentication-manager alias="authenticationManager">
 		<authentication-provider user-service-ref="authenticationServiceImpl">
 			<password-encoder hash="sha" base64="true" ref="apiPasswordEncoder">
@@ -86,7 +101,7 @@
 			</user-service>
 		</authentication-provider>
 	</authentication-manager>
-
+-->
 
 	<beans:bean id="successHandler" class="com.llug.api.ApiLogoutHandler" />
 	

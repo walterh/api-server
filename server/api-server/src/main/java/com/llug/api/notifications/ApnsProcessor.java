@@ -8,6 +8,8 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
+import lombok.extern.slf4j.Slf4j;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,14 +22,13 @@ import com.notnoop.apns.ApnsService;
 import com.notnoop.apns.ApnsServiceBuilder;
 import com.notnoop.apns.PayloadBuilder;
 import com.wch.commons.utils.FileUtils;
+import com.wch.commons.utils.LogUtils;
 import com.wch.commons.utils.ResourceUrl;
 import com.wch.commons.utils.Utils;
 
+@Slf4j
 @Component
 public class ApnsProcessor {
-    private static final Logger logger = LoggerFactory.getLogger(ApnsProcessor.class);
-
-    // These must align with iOS definitions to be used as JSON keys (Notification.m)
     public final static String APNS_JSON_KEY_TYPE = "t";
     public final static String APNS_JSON_KEY_TIMESTAMP = "ts";
     public final static String APNS_JSON_KEY_VERSION = "v";
@@ -69,14 +70,18 @@ public class ApnsProcessor {
                 apnsCertFilePath = ResourceUrl.parse(rsrcBase + "../../src/main/" + apnsCertFilePath).collapse().getUri();
             }
 
-            ApnsServiceBuilder serviceBuilder = APNS.newService().withCert(apnsCertFilePath, apnsCertPassword);
-            if (env == IOSEnvironment.prod || env == null) {
-                serviceBuilder = serviceBuilder.withProductionDestination();
-            } else {
-                serviceBuilder = serviceBuilder.withSandboxDestination();
+            try {
+                ApnsServiceBuilder serviceBuilder = APNS.newService().withCert(apnsCertFilePath, apnsCertPassword);
+                if (env == IOSEnvironment.prod || env == null) {
+                    serviceBuilder = serviceBuilder.withProductionDestination();
+                } else {
+                    serviceBuilder = serviceBuilder.withSandboxDestination();
+                }
+    
+                apnsServices.add(serviceBuilder.build());
+            } catch (Exception e) {
+                log.error(String.format("Could not initialize cert at path='%s'; exception = %s", apnsCertFilePath, LogUtils.getStackTrace(e)));
             }
-
-            apnsServices.add(serviceBuilder.build());
         }
     }
 
