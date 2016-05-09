@@ -2,7 +2,6 @@ package com.llug.api.service;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -10,7 +9,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.llug.api.ApiPasswordEncoder;
 import com.llug.api.domain.Account;
 import com.llug.api.domain.DeviceRegistrationInfo;
 import com.llug.api.domain.IOSEnvironment;
@@ -32,7 +30,6 @@ public class AccountService {
 
     @Autowired
     PasswordEncoder passwordEncoder;
-    //ApiPasswordEncoder passwordEncoder;
 
     @Autowired
     LlugRepository accountRepository;

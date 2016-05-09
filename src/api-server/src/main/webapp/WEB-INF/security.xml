@@ -80,28 +80,6 @@
         <beans:property name="userDetailsService" ref="authenticationServiceImpl" />
         <beans:property name="passwordEncoder" ref="passwordEncoder" />
     </beans:bean>
-    
-    
-    
-
-    	
-	<!-- http://stackoverflow.com/questions/8067564/spring-security-salt -->
-<!--    
-    <beans:bean id="apiPasswordEncoder" class="com.llug.api.ApiPasswordEncoder" autowire="byName" />
-    <beans:bean id="apiSaltSource" class="com.llug.api.ApiSaltSource" />
-	<authentication-manager alias="authenticationManager">
-		<authentication-provider user-service-ref="authenticationServiceImpl">
-			<password-encoder hash="sha" base64="true" ref="apiPasswordEncoder">
-				<salt-source ref="apiSaltSource" />
-			</password-encoder>
-		</authentication-provider>
-		<authentication-provider>
-			<user-service>				
-				<user name="llug_admin" password="asdfasdf" authorities="ROLE_LLUG_ADMIN" />
-			</user-service>
-		</authentication-provider>
-	</authentication-manager>
--->
 
 	<beans:bean id="successHandler" class="com.llug.api.ApiLogoutHandler" />
 	
