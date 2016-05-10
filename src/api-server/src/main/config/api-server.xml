@@ -120,7 +120,7 @@
     </bean>
 
     <bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
-        <property name="dataSource" ref="dataSource" />
+        <property name="dataSource" ref="hikariDataSource" />
         <property name="packagesToScan" value="com.llug.api.persistence.model" />
         <property name="hibernateProperties">
             <props>
@@ -135,6 +135,8 @@
         </property>
     </bean>
 
+    
+<!--
     <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
         <property name="driverClassName" value="$api{jdbc.driverClassName}" />
         <property name="url" value="$api{jdbc.url}" />
@@ -147,7 +149,43 @@
         <property name="validationQuery" value="$api{dbcp.validationQuery}" />
         <property name="testOnBorrow" value="true" />
     </bean>
+-->
 
+
+<!--
+    // https://github.com/brettwooldridge/HikariCP/wiki/Spring-Hibernate
+    // http://stackoverflow.com/questions/23172643/how-to-set-up-datasource-with-spring-for-hikaricp
+    // http://stackoverflow.com/questions/28884797/password-encryption-in-hikaricp?rq=1
+    //
+    // hibernate 3.x style config
+-->
+    <bean id="hikariConfig" class="com.zaxxer.hikari.HikariConfig">
+        <property name="poolName" value="springHikariCP" />
+        <property name="connectionTestQuery" value="$api{dbcp.validationQuery}" />
+        <property name="dataSourceClassName" value="com.mysql.jdbc.jdbc2.optional.MysqlDataSource" />
+        <property name="registerMbeans" value="true" />
+        <property name="maximumPoolSize" value="$api{hikari.maximumPoolSize}" />
+        <property name="idleTimeout" value="$api{hikari.idleTimeout}" />
+        <property name="maxLifetime" value="$api{hikari.maxLifetime}" />
+        <property name="connectionTimeout" value="$api{hikari.connectionTimeout}" />
+
+        <property name="dataSourceProperties">
+            <props>
+                <prop key="url">$api{jdbc.url}</prop>
+                <prop key="user">$api{jdbc.user}</prop>
+                <prop key="password">$api{jdbc.pass}</prop>
+                <prop key="cachePrepStmts">$api{hikari.dataSource.cachePrepStmts</prop>
+                <prop key="prepStmtCacheSize">$api{hikari.dataSource.prepStmtCacheSize}</prop>
+                <prop key="prepStmtCacheSqlLimit">$api{hikari.dataSource.prepStmtCacheSqlLimit}</prop>
+                <prop key="useServerPrepStmts">$api{hikari.dataSource.useServerPrepStmts}</prop>
+            </props>
+        </property>
+
+    </bean>
+
+    <bean id="hikariDataSource" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
+        <constructor-arg ref="hikariConfig" />
+    </bean>
 
     <bean id="persistenceExceptionTranslationPostProcessor" class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor" />
 
