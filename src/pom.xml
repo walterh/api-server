@@ -21,7 +21,7 @@
 		<org.springframework.social.googleplus-version>1.0.0.RELEASE</org.springframework.social.googleplus-version>
 		<jetty.version>9.3.8.v20160314</jetty.version>
 		<slf4j.version>1.6.1</slf4j.version>
-		<org.aspectj-version>1.8.5</org.aspectj-version>
+		<org.aspectj-version>1.8.8</org.aspectj-version>
 		<powermock.version>1.4.12</powermock.version>
 
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
