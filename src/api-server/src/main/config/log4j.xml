@@ -95,8 +95,7 @@
 		</layout>
 	</appender>
 
-	<!-- This JMX appender creates an MBean and publishes it to the platform
-		MBean server by default. -->
+	<!-- This JMX appender creates an MBean and publishes it to the platform MBean server by default. -->
 	<!-- appender name="perf4jJmxAppender"
 		class="org.perf4j.log4j.JmxAttributeStatisticsAppender">
 		<param name="TagNamesToExpose" value="finalizeMessage,createMedia" />
@@ -212,15 +211,20 @@
 	<logger name="com.amazonaws.request">
 		<level value="warn" />
 	</logger>
+    
+    <logger name="com.zaxxer">
+        <level value="info" />
+        <appender-ref ref="console" />
+    </logger>
 
 	<!-- http://stackoverflow.com/questions/2862780/how-to-disable-hibernate-flooding-logs -->
 	<!-- Disable all Hibernate logging.  If there is a Hibernate error, we will log.  This reduces double-logging -->
 	<logger name="org.hibernate">
-		<level value="off" />
+		<level value="warn" />
 	</logger>
 
 	<logger name="log4j.logger.org.hibernate">
-		<level value="off" />
+		<level value="warn" />
 	</logger>
 
 
