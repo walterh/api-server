@@ -14,14 +14,18 @@
 
     <properties>
         <spring.version>4.2.5.RELEASE</spring.version>
+        <spring.security.version>4.1.0.RELEASE</spring.security.version>
         <org.springframework.social-version>1.1.0.RELEASE</org.springframework.social-version>
         <org.springframework.social.facebook-version>2.0.3.RELEASE</org.springframework.social.facebook-version>
         <org.springframework.social.twitter-version>1.1.2.RELEASE</org.springframework.social.twitter-version>
         <org.springframework.social.linkedin-version>1.0.2.RELEASE</org.springframework.social.linkedin-version>
         <org.springframework.social.googleplus-version>1.0.0.RELEASE</org.springframework.social.googleplus-version>
         <jetty.version>9.3.8.v20160314</jetty.version>
+
+        <jackson.version>2.7.4</jackson.version>
         <slf4j.version>1.7.16</slf4j.version>
-        <log4j.version>2.5</log4j.version>
+        <logback.version>1.1.7</logback.version>
+
         <org.aspectj-version>1.8.8</org.aspectj-version>
         <powermock.version>1.4.12</powermock.version>
 
