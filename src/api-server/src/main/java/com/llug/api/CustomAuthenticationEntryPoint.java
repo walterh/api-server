@@ -14,10 +14,6 @@ import org.springframework.security.web.authentication.LoginUrlAuthenticationEnt
 public class CustomAuthenticationEntryPoint extends LoginUrlAuthenticationEntryPoint {
 	private final RedirectStrategy redirectStrategy = new FullRedirectStrategy();
 	
-	public CustomAuthenticationEntryPoint() {
-		super("/signin");
-	}
-	
 	public CustomAuthenticationEntryPoint(String loginFormUrl) {
 		super(loginFormUrl);
 	}
