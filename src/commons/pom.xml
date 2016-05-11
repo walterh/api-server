@@ -162,6 +162,11 @@
                     <groupId>org.jboss.javassist</groupId>
                     <artifactId>com.springsource.javassist</artifactId>
                 </exclusion>
+
+                <exclusion>
+                    <groupId>org.jboss.logmanager</groupId>
+                    <artifactId>com.springsource.org.jboss.logmanager</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
 
@@ -192,17 +197,26 @@
             </exclusions>
         </dependency>
 
+<!--
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>com.springsource.slf4j.api</artifactId>
-            <version>${slf4j.version}</version>
+            <version>1.6.1</version>
         </dependency>
+        
+        <dependency>
+            <groupId>org.jboss.logmanager</groupId>
+            <artifactId>com.springsource.org.jboss.logmanager</artifactId>
+            <version>1.2.0.GA</version>
+        </dependency>        
+-->
+
 
 		<!-- http://www.javacodegeeks.com/2013/05/hibernate-4-with-spring.html -->
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-core</artifactId>
-            <version>4.2.7.Final</version>
+            <version>5.0.9.Final</version>
         </dependency>
 
         <dependency>
@@ -214,13 +228,13 @@
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-validator</artifactId>
-            <version>4.3.1.Final</version>
+            <version>5.2.4.Final</version>
         </dependency>
 
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-validator-annotation-processor</artifactId>
-            <version>4.3.1.Final</version>
+            <version>5.2.4.Final</version>
         </dependency>
 
 		<!-- java.lang.NoSuchMethodError: javassist.bytecode.Descriptor.toString(Ljava/lang/String;)Ljava/lang/String -->
@@ -296,11 +310,27 @@
         </dependency>
 
 		<!-- Logging -->
+<!--
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>${log4j.version}</version>
+        </dependency>
+-->        
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>${slf4j.version}</version>
         </dependency>
+        
+        <!-- If existing components use SLF4J and you want to have this logging routed to Log4j 2, then add the following but do not remove any SLF4J dependencies. -->
+<!--
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-slf4j-impl</artifactId>
+            <version>${log4j.version}</version>
+        </dependency>
+-->
 
 		<!-- JPA -->
         <dependency>
@@ -583,7 +613,7 @@
         <dependency>
             <groupId>org.perf4j</groupId>
             <artifactId>perf4j</artifactId>
-            <version>0.9.13</version>
+            <version>0.9.16</version>
         </dependency>
 
 		<!-- Enables us to redirect sysout/syserr to logging framework so logging 
