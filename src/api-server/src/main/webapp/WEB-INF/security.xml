@@ -1,79 +1,80 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans:beans xmlns="http://www.springframework.org/schema/security" xmlns:beans="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:p="http://www.springframework.org/schema/p"
-	xsi:schemaLocation="http://www.springframework.org/schema/security
+    xmlns:p="http://www.springframework.org/schema/p"
+    xsi:schemaLocation="http://www.springframework.org/schema/security
     http://www.springframework.org/schema/security/spring-security-3.2.xsd
 	http://www.springframework.org/schema/beans
-	http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+	http://www.springframework.org/schema/beans/spring-beans-3.1.xsd"
+>
 
-	<http pattern="/llug_admin/**" create-session="stateless">
-		<intercept-url pattern="/**" access="ROLE_LLUG_ADMIN" />
-		<http-basic />
-	</http>
+    <http pattern="/llug_admin/**" create-session="stateless">
+        <intercept-url pattern="/**" access="ROLE_LLUG_ADMIN" />
+        <http-basic />
+    </http>
 
-	<beans:bean id="basicAuthenticationEntryPoint" class="org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint">
-		<beans:property name="realmName" value="WS realm" />
-	</beans:bean>
+    <beans:bean id="basicAuthenticationEntryPoint" class="org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint">
+        <beans:property name="realmName" value="WS realm" />
+    </beans:bean>
 
-	<beans:bean id="basicAuthenticationProcessingFilter" class="org.springframework.security.web.authentication.www.BasicAuthenticationFilter">
-		<beans:property name="authenticationManager" ref="authenticationManager" />
-		<beans:property name="authenticationEntryPoint" ref="basicAuthenticationEntryPoint" />
-	</beans:bean>
+    <beans:bean id="basicAuthenticationProcessingFilter" class="org.springframework.security.web.authentication.www.BasicAuthenticationFilter">
+        <beans:property name="authenticationManager" ref="authenticationManager" />
+        <beans:property name="authenticationEntryPoint" ref="basicAuthenticationEntryPoint" />
+    </beans:bean>
 
 
-	<http auto-config="true" use-expressions="true" security-context-repository-ref="memcachedSecurityContextRepository" entry-point-ref="customAuthenticationEntryPoint">
-		<form-login login-page="/signin" login-processing-url="/j_spring_security_check" default-target-url="/" authentication-failure-url="/signin?param.error=bad_credentials" />
+    <http auto-config="true" use-expressions="true" security-context-repository-ref="memcachedSecurityContextRepository" entry-point-ref="customAuthenticationEntryPoint">
+        <form-login login-page="/signin" login-processing-url="/j_spring_security_check" default-target-url="/" authentication-failure-url="/signin?param.error=bad_credentials" />
 		<!-- authentication-success-handler-ref="authenticationHandler" authentication-failure-handler-ref="authenticationHandler" -->
 
-		<logout logout-url="/realsignout" invalidate-session="true" delete-cookies="avid" success-handler-ref="successHandler" />
+        <logout logout-url="/realsignout" invalidate-session="true" delete-cookies="avid" success-handler-ref="successHandler" />
 
-		<remember-me user-service-ref="authenticationServiceImpl" />
+        <remember-me user-service-ref="authenticationServiceImpl" />
 
-		<intercept-url pattern="/j_spring_security_check" access="permitAll" />
+        <intercept-url pattern="/j_spring_security_check" access="permitAll" />
 
-		<intercept-url pattern="/favicon.ico" access="permitAll" />
-		<intercept-url pattern="/resources/**" access="permitAll" />
-		<intercept-url pattern="/jquery/**" access="permitAll" />
-		<intercept-url pattern="/org/**" access="permitAll" />
-		<intercept-url pattern="/static/**" access="permitAll" />
+        <intercept-url pattern="/favicon.ico" access="permitAll" />
+        <intercept-url pattern="/resources/**" access="permitAll" />
+        <intercept-url pattern="/jquery/**" access="permitAll" />
+        <intercept-url pattern="/org/**" access="permitAll" />
+        <intercept-url pattern="/static/**" access="permitAll" />
 
-		<intercept-url pattern="/stats" access="permitAll" />
-		<intercept-url pattern="/perf4j" access="permitAll" />
-		<intercept-url pattern="/perf4jLastDay" access="permitAll" />
+        <intercept-url pattern="/stats" access="permitAll" />
+        <intercept-url pattern="/perf4j" access="permitAll" />
+        <intercept-url pattern="/perf4jLastDay" access="permitAll" />
 
-		<intercept-url pattern="/api/*" access="isAuthenticated()" />
-		<intercept-url pattern="/api/login/**" access="permitAll" />
+        <intercept-url pattern="/api/*" access="isAuthenticated()" />
+        <intercept-url pattern="/api/login/**" access="permitAll" />
 
 		<!-- These API's are public -->
-		<intercept-url pattern="/api/account/public/profile/**" access="permitAll" />
-		<intercept-url pattern="/api/public/**" access="permitAll" />
+        <intercept-url pattern="/api/account/public/profile/**" access="permitAll" />
+        <intercept-url pattern="/api/public/**" access="permitAll" />
 
-		<intercept-url pattern="/serverstatus**" access="permitAll" />
+        <intercept-url pattern="/serverstatus**" access="permitAll" />
 
 
-		<http-basic />
+        <http-basic />
 
-		<custom-filter ref="digestFilter" before="BASIC_AUTH_FILTER" />
-	</http>
+        <custom-filter ref="digestFilter" before="BASIC_AUTH_FILTER" />
+    </http>
 <!--	
 	<http pattern="/favicon.ico" security="none" />
  -->
 
-	<beans:bean id="digestFilter" class="org.springframework.security.web.authentication.www.DigestAuthenticationFilter">
-		<beans:property name="userDetailsService" ref="authenticationServiceImpl" />
-		<beans:property name="authenticationEntryPoint" ref="digestEntryPoint" />
-	</beans:bean>
+    <beans:bean id="digestFilter" class="org.springframework.security.web.authentication.www.DigestAuthenticationFilter">
+        <beans:property name="userDetailsService" ref="authenticationServiceImpl" />
+        <beans:property name="authenticationEntryPoint" ref="digestEntryPoint" />
+    </beans:bean>
 
-	<beans:bean id="digestEntryPoint" class="org.springframework.security.web.authentication.www.DigestAuthenticationEntryPoint">
-		<beans:property name="realmName" value="LLUG Realm via Digest Authentication" />
-		<beans:property name="key" value="llug" />
-		<beans:property name="order" value="1" />
-	</beans:bean>
+    <beans:bean id="digestEntryPoint" class="org.springframework.security.web.authentication.www.DigestAuthenticationEntryPoint">
+        <beans:property name="realmName" value="LLUG Realm via Digest Authentication" />
+        <beans:property name="key" value="llug" />
+        <beans:property name="order" value="1" />
+    </beans:bean>
 
     <!-- https://stackoverflow.com/questions/17444258/how-to-use-new-passwordencoder-from-spring-security?rq=1 -->
-	<beans:bean id="passwordEncoder" class="com.llug.api.ApiBCryptPasswordEncoder" autowire="byName" />
+    <beans:bean id="passwordEncoder" class="com.llug.api.ApiBCryptPasswordEncoder" autowire="byName" />
     <authentication-manager alias="authenticationManager">
-        <authentication-provider ref="authProvider"></authentication-provider>  
+        <authentication-provider ref="authProvider"></authentication-provider>
     </authentication-manager>
 
     <beans:bean id="authProvider" class="org.springframework.security.authentication.dao.DaoAuthenticationProvider">
@@ -81,7 +82,7 @@
         <beans:property name="passwordEncoder" ref="passwordEncoder" />
     </beans:bean>
 
-	<beans:bean id="successHandler" class="com.llug.api.ApiLogoutHandler" />
+    <beans:bean id="successHandler" class="com.llug.api.ApiLogoutHandler" />
 	
 <!-- http://stackoverflow.com/questions/2608372/spring-security-rememberme-services-with-session-cookie -->
 <!--
@@ -94,21 +95,21 @@
 
 
 	<!-- http://www.basrikahveci.com/configuring-spring-security-to-persist-the-securitycontext-to-places-other-then-session-between-requests/ -->
-	<beans:bean id="memcachedSecurityContextRepository" class="com.llug.api.repository.MemcachedSecurityContextRepository" autowire="byName" />
+    <beans:bean id="memcachedSecurityContextRepository" class="com.llug.api.repository.MemcachedSecurityContextRepository" autowire="byName" />
 
 	<!-- http://waqassiddiqi.net/blog/2012/01/28/dynamic-authentication-success-and-failure-url-using-spring-3-mvc-security/ -->
 	<!-- http://forum.springsource.org/archive/index.php/t-96287.html -->
 
 	<!-- http://teja.tejakantamneni.com/2008/08/spring-security-using-custom.html -->
-	<beans:bean id="customAuthenticationEntryPoint" class="com.llug.api.CustomAuthenticationEntryPoint">
-		<beans:property name="loginFormUrl" value="/signin" />
-	</beans:bean>
+    <beans:bean id="customAuthenticationEntryPoint" class="com.llug.api.CustomAuthenticationEntryPoint">
+        <beans:property name="loginFormUrl" value="/signin" />
+    </beans:bean>
 
-	<beans:bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+    <beans:bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
     <!-- one of the properties available; the maximum file size in bytes -->
     <!-- 5MB upload, plus all associated metadata...add an extra 20K -->
-		<beans:property name="maxUploadSize" value="5263360" />
-	</beans:bean>
+        <beans:property name="maxUploadSize" value="5263360" />
+    </beans:bean>
 
-	<global-method-security secured-annotations="enabled" jsr250-annotations="enabled" />
+    <global-method-security secured-annotations="enabled" jsr250-annotations="enabled" />
 </beans:beans>
