@@ -12,10 +12,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import lombok.extern.slf4j.Slf4j;
+
 import org.mortbay.jetty.HttpConnection;
 import org.mortbay.jetty.Request;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationTrustResolver;
 import org.springframework.security.authentication.AuthenticationTrustResolverImpl;
@@ -30,10 +30,9 @@ import org.springframework.stereotype.Repository;
 
 import com.wch.commons.utils.Utils;
 
+@Slf4j
 @Repository
 public class MemcachedSecurityContextRepository implements SecurityContextRepository {
-    private static Logger logger = LoggerFactory.getLogger(MemcachedSecurityContextRepository.class);
-
     private static final String PFX = "ssc"; // for SPRING_SECURITY_CONTEXT
 
     @Value("$api{sessionCookieName}")
@@ -75,9 +74,7 @@ public class MemcachedSecurityContextRepository implements SecurityContextReposi
         SecurityContext context = readSecurityContextFromSession(httpSession);
 
         if (context == null) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("No SecurityContext was available from the HttpSession: " + httpSession + ". " + "A new one will be created.");
-            }
+            log.debug("No SecurityContext was available from the HttpSession: " + httpSession + ". " + "A new one will be created.");
             context = generateNewContext();
         }
 
@@ -90,7 +87,7 @@ public class MemcachedSecurityContextRepository implements SecurityContextReposi
     public void saveContext(SecurityContext context, HttpServletRequest request, HttpServletResponse response) {
         String path = request.getRequestURI();
         if (path == null) {
-            logger.error("path is null");
+            log.error("path is null");
         }
         SaveToSessionResponseWrapper responseWrapper = (SaveToSessionResponseWrapper) response;
         // saveContext() might already be called by the response wrapper
@@ -113,9 +110,7 @@ public class MemcachedSecurityContextRepository implements SecurityContextReposi
         final boolean debug = true;
 
         if (httpSession == null) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("No HttpSession currently exists");
-            }
+            log.debug("No HttpSession currently exists");
 
             return null;
         }
@@ -125,27 +120,21 @@ public class MemcachedSecurityContextRepository implements SecurityContextReposi
         Object contextFromSession = memcacheRepository.get(key);
 
         if (contextFromSession == null) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("HttpSession returned null object for SPRING_SECURITY_CONTEXT");
-            }
+            log.debug("HttpSession returned null object for SPRING_SECURITY_CONTEXT");
 
             return null;
         }
 
         // We now have the security context object from the session.
         if (!(contextFromSession instanceof SecurityContext)) {
-            if (logger.isWarnEnabled()) {
-                logger.warn(key + " did not contain a SecurityContext but contained: '" + contextFromSession
+            log.warn(key + " did not contain a SecurityContext but contained: '" + contextFromSession
                         + "'; are you improperly modifying the HttpSession directly "
                         + "(you should always use SecurityContextHolder) or using the HttpSession attribute " + "reserved for this class?");
-            }
 
             return null;
         }
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("Obtained a valid SecurityContext from " + key + ": '" + contextFromSession + "'");
-        }
+        log.debug("Obtained a valid SecurityContext from " + key + ": '" + contextFromSession + "'");
 
         // Everything OK. The only non-null return from this method.
 
@@ -247,9 +236,7 @@ public class MemcachedSecurityContextRepository implements SecurityContextReposi
 
             // See SEC-776
             if (authentication == null || authenticationTrustResolver.isAnonymous(authentication)) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("SecurityContext is empty or contents are anonymous - context will not be stored in HttpSession.");
-                }
+                log.debug("SecurityContext is empty or contents are anonymous - context will not be stored in HttpSession.");
 
                 if (httpSession != null) {
                     String key = getContextKey(httpSession.getId());
@@ -274,9 +261,7 @@ public class MemcachedSecurityContextRepository implements SecurityContextReposi
                     if (!sessionBlacklist.contains(path)) {
                         memcacheRepository.set(key, context);
 
-                        if (logger.isDebugEnabled()) {
-                            logger.debug("SecurityContext stored to HttpSession: '" + context + "'");
-                        }
+                        log.debug("SecurityContext stored to HttpSession: '" + context + "'");
                     }
                 }
             }
@@ -305,42 +290,34 @@ public class MemcachedSecurityContextRepository implements SecurityContextReposi
 
         private HttpSession createNewSessionIfAllowed(SecurityContext context) {
             if (httpSessionExistedAtStartOfRequest) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("HttpSession is now null, but was not null at start of request; " + "session was invalidated, so do not create a new session");
-                }
+                log.debug("HttpSession is now null, but was not null at start of request; " + "session was invalidated, so do not create a new session");
 
                 return null;
             }
 
             if (!allowSessionCreation) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("The HttpSession is currently null, and the " + HttpSessionSecurityContextRepository.class.getSimpleName()
+                log.debug("The HttpSession is currently null, and the " + HttpSessionSecurityContextRepository.class.getSimpleName()
                             + " is prohibited from creating an HttpSession "
                             + "(because the allowSessionCreation property is false) - SecurityContext thus not " + "stored for next request");
-                }
 
                 return null;
             }
             // Generate a HttpSession only if we need to
 
             if (contextObject.equals(context)) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("HttpSession is null, but SecurityContext has not changed from default empty context: ' " + context
+                log.debug("HttpSession is null, but SecurityContext has not changed from default empty context: ' " + context
                             + "'; not creating HttpSession or storing SecurityContext");
-                }
 
                 return null;
             }
 
-            if (logger.isDebugEnabled()) {
-                logger.debug("HttpSession being created as SecurityContext is non-default");
-            }
+            log.debug("HttpSession being created as SecurityContext is non-default");
 
             try {
                 return request.getSession(true);
             } catch (IllegalStateException e) {
                 // Response must already be committed, therefore can't create a new session
-                logger.error("Failed to create a session, as response has been committed. Unable to store" + " SecurityContext.");
+                log.error("Failed to create a session, as response has been committed. Unable to store" + " SecurityContext.");
             }
 
             return null;

@@ -9,16 +9,15 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import lombok.extern.slf4j.Slf4j;
+
 import org.apache.commons.lang3.tuple.Pair;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import ch.lambdaj.function.closure.Closure1;
 import ch.lambdaj.function.closure.Closure3;
 
+@Slf4j
 public class ResourceUrl implements Cloneable {
-    private static Logger logger = LoggerFactory.getLogger(ResourceUrl.class);
-
     public static final String FILE_SCHEME_HEADER1 = "file://";
     public static final String FILE_SCHEME_HEADER2 = "file:";
     public static final String FILE_SCHEME = "file";
@@ -274,8 +273,7 @@ public class ResourceUrl implements Cloneable {
                 sb.append(String.format("\t%s\n", groupStr));
             }
         }
-        logger.info(sb.toString());
-        System.out.println(sb.toString());
+        log.info(sb.toString());
     }
 
     public static List<Pair<ResourceUrl, Long>> getSortedFragmentKeysAndSizes(final ResourceUrl remoteSrcUrl, final List<Pair<ResourceUrl, Long>> keySizeListing) {

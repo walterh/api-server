@@ -9,8 +9,6 @@ import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.util.thread.ThreadPool;
 import org.eclipse.jetty.webapp.WebAppContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 
 import uk.org.lidalia.sysoutslf4j.context.SysOutOverSLF4J;
@@ -37,7 +35,7 @@ public class ApiServerApp {
         final ServerConnector connector = new ServerConnector(server, new HttpConnectionFactory());
         connector.setPort(port);
         server.addConnector(connector);
-        
+
         // http://wiki.eclipse.org/Jetty/Tutorial/Embedding_Jetty
         // http://stackoverflow.com/questions/4390093/add-web-application-context-to-jetty
         final WebAppContext wac = new WebAppContext();
@@ -64,7 +62,7 @@ public class ApiServerApp {
         memcachedSessionIdManager.setKeyPrefix("session:");
         server.setSessionIdManager(memcachedSessionIdManager);
         server.setAttribute("memcachedSessionIdManager", memcachedSessionIdManager);
-        
+
         server.setHandler(wac);
 
         server.start();
