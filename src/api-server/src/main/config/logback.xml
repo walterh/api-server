@@ -229,8 +229,15 @@
         <appender-ref ref="CoalescingStatisticsLastDay" />
         <appender-ref ref="perf4jFileAppender" />
     </logger>
+    
+    <!-- useful for debugging session state -->
+    <logger name="com.llug.api.repository.MemcacheRepository" level="debug" />
+    <logger name="com.llug.api.repository.MemcachedSecurityContextRepository" level="debug" />
 
-    <logger name="com.zaxxer" level="info" />
+    <!-- db pool & hibernate -->
+    <logger name="com.zaxxer" level="debug" />
+    <logger name="org.hibernate" level="warn" />
+
     <logger name="org.springframework.core" level="warn" />
     <logger name="org.springframework.social" level="info" />
     <logger name="org.springframework.beans" level="warn" />
@@ -241,15 +248,18 @@
     <logger name="org.springframework.integration" level="warn" />
     <logger name="org.springframework" level="warn" />
 
+    <!-- xmemcached, https://github.com/killme2008/xmemcached -->
+    <logger name="net.rubyeye.xmemcached" level="warn" />
+    <logger name="com.google.code.yanf4j" level="warn" />
+
     <logger name="com.amazonaws.request" level="warn" />
-    <logger name="org.hibernate" level="warn" />
     <logger name="ch.qos.logback.classic.joran" level="warn" />
     <logger name="org.apache.commons" level="warn" />
     <logger name="httpclient.wire" level="warn" />
     <logger name="org" level="error" />
 
 
-    <root level="info">
+    <root level="warn">
         <appender-ref ref="CONSOLE" />
         <appender-ref ref="FILE" />
     </root>
