@@ -3,12 +3,12 @@ package com.wch.commons.utils;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.web.multipart.MultipartFile;
 
+@Slf4j
 public class InMemoryFile {
-    private static Logger logger = LoggerFactory.getLogger(InMemoryFile.class);
     private ChunkedMemoryStream fileStream;
     private String fileName;
     private String contentType;
@@ -37,7 +37,7 @@ public class InMemoryFile {
 
             if (Utils.isNullOrEmptyString(contentType)) {
                 contentType = FileUtils.inferContentTypeFromFileName(fileName);
-                logger.info(String.format("InMemoryFile:  null contentType; filename is \"%s\", inferring contentType=\"%s\"", fileName, contentType));
+                log.info(String.format("InMemoryFile:  null contentType; filename is \"%s\", inferring contentType=\"%s\"", fileName, contentType));
             }
 
             // copy over the multipart file, in case we dispatch async on an ExecuteService

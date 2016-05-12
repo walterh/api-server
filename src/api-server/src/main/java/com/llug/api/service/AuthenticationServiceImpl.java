@@ -12,8 +12,8 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -35,9 +35,9 @@ import com.wch.commons.utils.DateUtils;
 import com.wch.commons.utils.EmailUtils;
 import com.wch.commons.utils.Md5;
 
+@Slf4j
 @Service
 public class AuthenticationServiceImpl implements AuthenticationService {
-    private static Logger logger = LoggerFactory.getLogger(AuthenticationServiceImpl.class);
     @Value("$api{sessionCookieName}")
     private String defaultSessionCookieName;
 
@@ -128,7 +128,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         String cacheKey = String.format("u:%d", account.getAccountIdAsLong());
         memcacheRepository.clear(cacheKey);
 
-        logger.info(String.format("deleting cache for user %s", account.getUsername()));
+        log.info(String.format("deleting cache for user %s", account.getUsername()));
 
         SecurityContextHolder.getContext().setAuthentication(null);
     }

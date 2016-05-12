@@ -3,14 +3,12 @@ package com.wch.commons.utils;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class LogUtils {
-    static Logger LOGGER = LoggerFactory.getLogger(LogUtils.class.getName());
-
     public static void logException(String description, Exception e) {
-        LOGGER.error(description, e);
+        log.error(description, e);
         if (e != null) {
             System.out.println(getStackTrace(e));
         }

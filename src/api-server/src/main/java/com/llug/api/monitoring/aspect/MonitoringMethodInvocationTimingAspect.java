@@ -16,6 +16,8 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 
+import lombok.extern.slf4j.Slf4j;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Appender;
 import org.apache.log4j.Logger;
@@ -31,7 +33,6 @@ import org.reflections.Reflections;
 import org.reflections.scanners.MethodAnnotationsScanner;
 import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -44,11 +45,10 @@ import com.llug.api.utils.RequestUtils;
 import com.wch.commons.utils.CryptoUtils;
 import com.wch.commons.utils.Utils;
 
+@Slf4j
 @Component
 @Aspect
 public class MonitoringMethodInvocationTimingAspect {
-    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(MonitoringMethodInvocationTimingAspect.class);
-
     @Value("$api{sha256Key.ios}")
     private String sha256Key1;
 
@@ -199,17 +199,17 @@ public class MonitoringMethodInvocationTimingAspect {
             final String hash = (!Utils.isNullOrEmptyString(hash1)) ? hash1 : hash2;
 
             if (Utils.isNullOrEmptyString(deviceId)) {
-                logger.warn(String.format("No deviceId provided for request = %s", apiString));
+                log.warn(String.format("No deviceId provided for request = %s", apiString));
             } else if (Utils.isNullOrEmptyString(hash)) {
-                logger.warn(String.format("No security hash provided by deviceId = %s for request = %s", deviceId, apiString));
+                log.warn(String.format("No security hash provided by deviceId = %s for request = %s", deviceId, apiString));
             } else if (hash.compareTo(calculatedHash) != 0) {
-                logger.error(String.format("Security hash mismatch (expected '%s', found '%s') provided by deviceId = %s for request = %s",
+                log.error(String.format("Security hash mismatch (expected '%s', found '%s') provided by deviceId = %s for request = %s",
                         calculatedHash,
                         hash,
                         deviceId,
                         apiString));
             } else {
-                logger.warn(String.format("Security hash matched (expected '%s', found '%s') provided by deviceId = %s for request = %s",
+                log.warn(String.format("Security hash matched (expected '%s', found '%s') provided by deviceId = %s for request = %s",
                         calculatedHash,
                         hash,
                         deviceId,
@@ -217,7 +217,7 @@ public class MonitoringMethodInvocationTimingAspect {
                 ret = true;
             }
         } catch (Exception e) {
-            logger.error(RequestUtils.getExtendedRequestErrorInfo(request, null, e));
+            log.error(RequestUtils.getExtendedRequestErrorInfo(request, null, e));
         }
 
         return ret;

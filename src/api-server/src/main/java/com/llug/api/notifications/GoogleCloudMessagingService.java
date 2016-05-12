@@ -11,9 +11,9 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
+import lombok.extern.slf4j.Slf4j;
+
 import org.apache.commons.io.IOUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
@@ -23,10 +23,9 @@ import com.google.android.gcm.server.Message.Builder;
 import com.wch.commons.utils.ResourceUrl;
 import com.wch.commons.utils.Utils;
 
+@Slf4j
 @Component
 public class GoogleCloudMessagingService {
-    private static Logger logger = LoggerFactory.getLogger(GoogleCloudMessagingService.class);
-
     @Value("$api{gcm.keypath}")
     private String gcmKeyPath;
 
