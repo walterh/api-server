@@ -10,8 +10,6 @@ import javax.annotation.PostConstruct;
 
 import lombok.extern.slf4j.Slf4j;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
@@ -80,7 +78,7 @@ public class ApnsProcessor {
     
                 apnsServices.add(serviceBuilder.build());
             } catch (Exception e) {
-                log.error(String.format("Could not initialize cert at path='%s'; exception = %s", apnsCertFilePath, LogUtils.getStackTrace(e)));
+                //log.error(String.format("Could not initialize cert at path='%s'; exception = %s", apnsCertFilePath, LogUtils.getStackTrace(e)));
             }
         }
     }

@@ -34,8 +34,6 @@ import org.hibernate.QueryException;
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Whitelist;
 import org.restlet.data.Reference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.web.authentication.session.SessionAuthenticationException;
 import org.springframework.web.context.request.NativeWebRequest;
