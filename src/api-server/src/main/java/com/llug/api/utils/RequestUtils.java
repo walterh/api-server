@@ -141,6 +141,10 @@ public class RequestUtils {
             if (Utils.isNullOrEmptyString(ip)) {
                 ip = request.getHeader("X-Forwarded-For");
             }
+            
+            if (Utils.isNullOrEmptyString(ip)) {
+                ip = request.getHeader("X-Real-IP");
+            }
 
             if (Utils.isNullOrEmptyString(ip)) {
                 ip = "127.0.0.1";
