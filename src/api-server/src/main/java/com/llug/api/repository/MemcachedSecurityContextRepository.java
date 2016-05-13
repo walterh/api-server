@@ -106,9 +106,6 @@ public class MemcachedSecurityContextRepository implements SecurityContextReposi
     }
 
     private SecurityContext readSecurityContextFromSession(HttpSession httpSession) {
-        //final boolean debug = logger.isDebugEnabled();
-        final boolean debug = true;
-
         if (httpSession == null) {
             log.debug("No HttpSession currently exists");
 

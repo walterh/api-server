@@ -135,10 +135,14 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public void cacheSession(HttpServletRequest request, Account account) {
-        String apiKey = getApiServiceSessionCacheKey(request);
+        final String apiKey = getApiServiceSessionCacheKey(request);
 
         // set the caches...
         memcacheRepository.set(apiKey, loginExpirySeconds, account.getAccountIdAsLong());
+        
+        // set the request's incoming ip address
+        final String ip = RequestUtils.getOriginatingIp(request);
+        account.setIpAddress(ip);
 
         cacheUser(account, true);
     }

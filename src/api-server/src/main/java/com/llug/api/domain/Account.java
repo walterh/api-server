@@ -34,6 +34,9 @@ public class Account implements UserDetails, Serializable {
     private Long timeUpdated;
     private Long flags;
     private String status;
+    
+    // used for security
+    private String ipAddress;
 
     @JsonIgnore
     @Override
@@ -132,6 +135,15 @@ public class Account implements UserDetails, Serializable {
     @JsonIgnore
     public String getEmailFriendlyName() {
         return String.format("\"%s\" <%s>", getFriendlyName(), email);
+    }
+    
+    @JsonIgnore
+    public String getIpAddress() {
+        return ipAddress;
+    }
+    
+    public void setIpAddress(String ipAddress) {
+        this.ipAddress = ipAddress;
     }
     
     @JsonIgnore
