@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration scan="true">
-    <property name="LOG_DIR" value="/Users/walterh/temp/api-server" />
+    <property name="LOG_DIR" value="/Users/walter/temp/api-server" />
 
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
