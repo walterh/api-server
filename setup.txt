@@ -60,6 +60,12 @@ note: this is relative to the root folder. eg for llug, it is src/pom.xml
 9)  Configure Maven in jenkins.  MAVEN_HOME=/usr/share/maven
 
 
+10) Install mysql:
+sudo apt-get update
+sudo apt-get install mysql-server
+
+11) install mysql workbench
+
 Setting Up MySQL SSH tunnelling
 - SSH Hostname:  the name of the mysql instance (server running mysql)
 - SSH username: ubuntu
